@@ -110,7 +110,7 @@ view: user_facts_table {
       CASE
         WHEN DATEDIFF(day, DATE(u.created_at), MIN(DATE(oi.created_at))) <= 30 THEN TRUE
         ELSE FALSE
-      END as ordered_within_30_days
+      END as ordered_within_30
 
       FROM users as u
       LEFT JOIN order_items as oi ON(u.id = oi.user_id)
