@@ -162,24 +162,35 @@ view: user_facts_table {
       sql:  ${TABLE}.ordered_within_30 ;;
       }
 
+    dimension: has_user_ordered {
+      type:  yesno
+      sql:  ${TABLE}.has_user_ordered ;;
+    }
+
     measure: user_count {
       type:  count
     }
 
     measure: users_ordering_within_30_days {
-      type:  sum
+      type:  count
       drill_fields: [user_id, user_days_to_first_order]
-      sql:
-      CASE
-        WHEN ${TABLE}.has_user_ordered is TRUE
-          AND ${TABLE}.ordered_within_30 is TRUE
-          THEN 1
-        ELSE 0 END;;
+      filters: {
+        field:  has_user_ordered
+        value: "TRUE"
+        }
+
+      filters: {
+        field:  user_ordered_within_30
+        value: "TRUE"
+      }
     }
 
     measure: users_not_ordering_within_30_days {
-      type:  sum
-      sql:  CASE WHEN ${TABLE}.ordered_within_30 is FALSE THEN 1 ELSE 0 END ;;
+      type:  count
+      filters: {
+        field: user_ordered_within_30
+        value: "FALSE"
+      }
     }
 
   }
