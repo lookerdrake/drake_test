@@ -1,10 +1,38 @@
 view: order_items {
-  sql_table_name: demo_db.order_items ;;
+  sql_table_name: public.order_items ;;
 
   dimension: id {
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
+  }
+
+  dimension_group: created {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.created_at ;;
+  }
+
+  dimension_group: delivered {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.delivered_at ;;
   }
 
   dimension: inventory_item_id {
@@ -15,7 +43,6 @@ view: order_items {
 
   dimension: order_id {
     type: number
-    # hidden: yes
     sql: ${TABLE}.order_id ;;
   }
 
@@ -38,8 +65,45 @@ view: order_items {
     sql: ${TABLE}.sale_price ;;
   }
 
+  dimension_group: shipped {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${TABLE}.shipped_at ;;
+  }
+
+  dimension: status {
+    type: string
+    sql: ${TABLE}.status ;;
+  }
+
+  dimension: user_id {
+    type: number
+    # hidden: yes
+    sql: ${TABLE}.user_id ;;
+  }
+
   measure: count {
     type: count
-    drill_fields: [id, inventory_items.id, orders.id]
+    drill_fields: [detail*]
+  }
+
+  # ----- Sets of fields for drilling ------
+  set: detail {
+    fields: [
+      id,
+      users.id,
+      users.first_name,
+      users.last_name,
+      inventory_items.id,
+      inventory_items.product_name
+    ]
   }
 }
