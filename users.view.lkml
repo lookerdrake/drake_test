@@ -12,6 +12,13 @@ view: users {
     sql: ${TABLE}.age ;;
   }
 
+  dimension: age_group {
+    type: tier
+    style: integer
+    tiers: [13, 21, 30, 40, 60, 80]
+    sql: ${age} ;;
+  }
+
   dimension: city {
     type: string
     sql: ${TABLE}.city ;;
@@ -83,8 +90,15 @@ view: users {
   }
 
   measure: count {
+    value_format_name: decimal_0
     type: count
     drill_fields: [id, first_name, last_name, events.count, order_items.count]
+  }
+
+  measure: avg_age {
+    value_format_name: decimal_2
+    type: average
+    sql: ${age} ;;
   }
 }
 
