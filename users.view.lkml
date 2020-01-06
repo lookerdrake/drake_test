@@ -15,7 +15,7 @@ view: users {
   dimension: age_group {
     type: tier
     style: integer
-    tiers: [13, 21, 30, 40, 60, 80]
+    tiers: [13, 21, 30, 60]
     sql: ${age} ;;
   }
 
@@ -42,6 +42,40 @@ view: users {
       year
     ]
     sql: ${TABLE}.created_at ;;
+  }
+
+
+  measure: distinct_count {
+    type: count_distinct
+    sql: ${id} ;;
+  }
+
+  parameter: start_date {
+    type: date
+    label: "Start Date"
+    description: "Use this for the custom filter things"
+  }
+
+  parameter: end_date {
+    type: date
+  }
+
+  dimension: meets_date_filter {
+    type: yesno
+    hidden: no
+    sql: ${created_date} >= {% parameter start_date %} AND ${created_date} < {% parameter end_date %}
+    ;;
+  }
+
+  # choose the filters
+  measure: custom_timeframe_count {
+    type: count_distinct
+    group_label: "Custom Filter Measures"
+    sql: ${id} ;;
+    filters: {
+      field: meets_date_filter
+      value: "Yes"
+    }
   }
 
   dimension: email {
