@@ -29,5 +29,15 @@ explore: order_items {
 }
 
 explore: users {
+  }
 
+explore: _rb_users {
+  hidden: yes
+  label: "Report Builder Explore"
+
+  join: order_items {
+    type: left_outer
+    relationship: one_to_many
+    sql_on: ${_rb_users.id} = ${order_items.user_id} ;;
+  }
 }
