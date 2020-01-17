@@ -1,5 +1,5 @@
 view: users {
-  sql_table_name: public.users ;;
+  sql_table_name:{{ _user_attributes['user_database'] }}.public.users ;;
 
   dimension: id {
     primary_key: yes
@@ -41,7 +41,7 @@ view: users {
       quarter,
       year
     ]
-    sql: ${TABLE}.created_at ;;
+    sql: TO_DATE(${TABLE}."Created Date") ;;
   }
 
 

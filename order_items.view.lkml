@@ -1,5 +1,5 @@
 view: order_items {
-  sql_table_name: public.order_items ;;
+  sql_table_name: {{ _user_attributes['user_database'] }}.public.order_items ;;
 
   dimension: id {
     primary_key: yes
@@ -87,7 +87,7 @@ view: order_items {
   dimension: user_id {
     type: number
     # hidden: yes
-    sql: ${TABLE}.user_id ;;
+    sql: ${TABLE}.USER_ID ;;
   }
 
   measure: count {

@@ -1,4 +1,4 @@
-connection: "snowlooker"
+connection: "parameterized_snowflake"
 
 # include all the views
 include: "*.view"
@@ -32,6 +32,7 @@ explore: users {
   }
 
 explore: _rb_users {
+  sql_always_where: ${id} > 0 ;;
   hidden: yes
   label: "Report Builder Explore"
 
