@@ -18,7 +18,7 @@ view: order_items {
       quarter,
       year
     ]
-    sql: ${TABLE}.created_at ;;
+    sql: TO_DATE(${TABLE}.created_at) ;;
   }
 
   dimension_group: delivered {
