@@ -97,7 +97,7 @@ view: order_items {
   }
 
   measure: total_revenue {
-    value_format_name: usd_0
+    value_format_name: decimal_0
     type: sum
     sql: ${sale_price} ;;
   }
