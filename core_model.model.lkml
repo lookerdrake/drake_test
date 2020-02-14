@@ -1,4 +1,4 @@
-connection: "parameterized_snowflake"
+connection: "snowlooker"
 
 # include all the views
 include: "Views/*.view"
