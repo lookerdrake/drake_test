@@ -1,6 +1,7 @@
-include: "*.view"
+include: "users.view"
 
 view: _rb_users {
+  label: "Dynamic Report Builder"
   extends: [users]
 
   ## parameters for dynamic-ness
@@ -92,49 +93,18 @@ view: _rb_users {
       label: "Number of Orders"
       value: "num_orders"
     }
-
   }
+
   dimension: dynamic_dimension {
     label_from_parameter: dimension_selector
-    sql:
-        {% if dimension_selector._parameter_value == 'week' %}
-          ${created_week}
-        {% elsif dimension_selector._parameter_value == 'month' %}
-          ${created_month}
-        {% elsif dimension_selector._parameter_value == 'quarter' %}
-          ${created_quarter}
-        {% elsif dimension_selector._parameter_value == 'gender' %}
-          ${gender}
-        {% elsif dimension_selector._parameter_value == 'age_group' %}
-          ${age_group}
-        {% elsif dimension_selector._parameter_value == 'country' %}
-          ${country}
-        {% else %}
-          ${created_quarter}
-        {% endif %}
-    ;;
+    sql: @{dynamic_dimension};;
   }
+
   dimension: dynamic_pivot {
     label_from_parameter: pivot_selector
-    sql:
-        {% if pivot_selector._parameter_value == 'week' %}
-          ${created_week}
-        {% elsif pivot_selector._parameter_value == 'month' %}
-          ${created_month}
-        {% elsif pivot_selector._parameter_value == 'quarter' %}
-          ${created_quarter}
-        {% elsif pivot_selector._parameter_value == 'gender' %}
-          ${gender}
-        {% elsif pivot_selector._parameter_value == 'age_group' %}
-          ${age_group}
-        {% elsif pivot_selector._parameter_value == 'country' %}
-          ${country}
-
-        {% else %}
-          ${created_quarter}
-        {% endif %}
-    ;;
+    sql: @{dynamic_pivot} ;;
   }
+
   measure: dynamic_measure {
     label_from_parameter: measure_selector
     type: number
@@ -168,4 +138,45 @@ view: _rb_users {
           {{order_items.total_revenue._rendered_value }}
         {% endif %};;
   }
+
+
+  parameter: measure_1 {
+    type: unquoted
+  }
+
+  parameter: operator_1 {
+    type: number
+  }
+
+  measure: custom_measure_1 {
+    type: number
+    sql:
+    {% if measure_1._parameter_value == 'count' %}
+      ${count}
+    {% else %}
+      ${avg_age}
+    {% endif %}
+
+     - {% parameter operator_1 %} ;;
+
+
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+
+
 }

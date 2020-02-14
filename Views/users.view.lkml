@@ -1,5 +1,5 @@
 view: users {
-  sql_table_name:{{ _user_attributes['user_database'] }}.public.users ;;
+  sql_table_name: public.users ;;
 
   dimension: id {
     primary_key: yes
@@ -8,6 +8,7 @@ view: users {
   }
 
   dimension: age {
+    label: "@{age_label}"
     type: number
     sql: ${TABLE}.age ;;
   }
@@ -38,6 +39,7 @@ view: users {
       date,
       week,
       month,
+      month_num,
       quarter,
       year
     ]
@@ -50,33 +52,7 @@ view: users {
     sql: ${id} ;;
   }
 
-  parameter: start_date {
-    type: date
-    label: "Start Date"
-    description: "Use this for the custom filter things"
-  }
 
-  parameter: end_date {
-    type: date
-  }
-
-  dimension: meets_date_filter {
-    type: yesno
-    hidden: no
-    sql: ${created_date} >= {% parameter start_date %} AND ${created_date} < {% parameter end_date %}
-    ;;
-  }
-
-  # choose the filters
-  measure: custom_timeframe_count {
-    type: count_distinct
-    group_label: "Custom Filter Measures"
-    sql: ${id} ;;
-    filters: {
-      field: meets_date_filter
-      value: "Yes"
-    }
-  }
 
   dimension: email {
     type: string
@@ -123,111 +99,92 @@ view: users {
     sql: ${TABLE}.zip ;;
   }
 
+  measure: drill_by_state {
+    hidden: yes
+    type: sum
+    sql: 1 ;;
+    drill_fields: [state, gender, count]
+  }
+
+
   measure: count {
     value_format_name: decimal_0
     type: count
-    drill_fields: [id, first_name, last_name, events.count, order_items.count]
+
+
+    drill_fields: [zip, gender, count]
+    link: {
+      label: "Drill with filters"
+      url: "{{link}}&f['users.country']={{ _filters['users.country'] }}"
+    }
+    link: {
+      label: "1. Drill with good looks"
+      url: "/looks/13"
+    }
+    link: {
+      label: "Drill by Zipcode"
+      url: "
+      {{link}}&pivots=users.gender&f[users.country]=USA&sorts=users.count+desc+0,users.gender&limit=10&vis=%7B%22x_axis_gridlines%22%3Afalse%2C%22y_axis_gridlines%22%3Atrue%2C%22show_view_names%22%3Afalse%2C%22show_y_axis_labels%22%3Atrue%2C%22show_y_axis_ticks%22%3Atrue%2C%22y_axis_tick_density%22%3A%22default%22%2C%22y_axis_tick_density_custom%22%3A5%2C%22show_x_axis_label%22%3Atrue%2C%22show_x_axis_ticks%22%3Atrue%2C%22y_axis_scale_mode%22%3A%22linear%22%2C%22x_axis_reversed%22%3Afalse%2C%22y_axis_reversed%22%3Afalse%2C%22plot_size_by_field%22%3Afalse%2C%22trellis%22%3A%22%22%2C%22stacking%22%3A%22normal%22%2C%22limit_displayed_rows%22%3Afalse%2C%22legend_position%22%3A%22center%22%2C%22series_types%22%3A%7B%7D%2C%22point_style%22%3A%22none%22%2C%22show_value_labels%22%3Atrue%2C%22label_density%22%3A25%2C%22x_axis_scale%22%3A%22auto%22%2C%22y_axis_combined%22%3Atrue%2C%22ordering%22%3A%22none%22%2C%22show_null_labels%22%3Afalse%2C%22show_totals_labels%22%3Atrue%2C%22show_silhouette%22%3Afalse%2C%22totals_color%22%3A%22%23808080%22%2C%22type%22%3A%22looker_column%22%7D&filter_config=%7B%22users.country%22%3A%5B%7B%22type%22%3A%22%3D%22%2C%22values%22%3A%5B%7B%22constant%22%3A%22USA%22%7D%2C%7B%7D%5D%2C%22id%22%3A0%2C%22error%22%3Afalse%7D%5D%7D&origin=share-expanded
+      "
+    }
+    link: {
+      label: "Drill by State"
+      url: "
+      {{ drill_by_state._link }}&pivots=users.gender&sorts=users.count+desc+0,users.gender&limit=10&column_limit=50&vis=%7B%22color_application%22%3A%7B%22collection_id%22%3A%22d754397b-2c05-4470-bbbb-05eb4c2b15cd%22%2C%22palette_id%22%3A%22b0768e0d-03b8-4c12-9e30-9ada6affc357%22%2C%22options%22%3A%7B%22steps%22%3A5%7D%7D%2C%22x_axis_gridlines%22%3Afalse%2C%22y_axis_gridlines%22%3Atrue%2C%22show_view_names%22%3Afalse%2C%22show_y_axis_labels%22%3Atrue%2C%22show_y_axis_ticks%22%3Atrue%2C%22y_axis_tick_density%22%3A%22default%22%2C%22y_axis_tick_density_custom%22%3A5%2C%22show_x_axis_label%22%3Atrue%2C%22show_x_axis_ticks%22%3Atrue%2C%22y_axis_scale_mode%22%3A%22linear%22%2C%22x_axis_reversed%22%3Afalse%2C%22y_axis_reversed%22%3Afalse%2C%22plot_size_by_field%22%3Afalse%2C%22trellis%22%3A%22%22%2C%22stacking%22%3A%22normal%22%2C%22limit_displayed_rows%22%3Afalse%2C%22legend_position%22%3A%22center%22%2C%22point_style%22%3A%22none%22%2C%22show_value_labels%22%3Atrue%2C%22label_density%22%3A25%2C%22x_axis_scale%22%3A%22auto%22%2C%22y_axis_combined%22%3Atrue%2C%22ordering%22%3A%22none%22%2C%22show_null_labels%22%3Afalse%2C%22show_totals_labels%22%3Atrue%2C%22show_silhouette%22%3Afalse%2C%22totals_color%22%3A%22%23808080%22%2C%22type%22%3A%22looker_column%22%7D&filter_config=%7B%7D&origin=share-expanded
+      "
+    }
+
+
   }
 
-  measure: avg_age {
-    value_format_name: decimal_2
-    type: average
-    sql: ${age} ;;
+  measure: summary_count {
+    type: sum
+    sql:  1 ;;
+    html:
+    <div style="width:100%"> <details>
+    <summary style="outline:none">{{ count._rendered_value }}
+    </summary><font color=”black"> Avg. Age: <strong>{{ avg_age._rendered_value }}</strong> </font>
+    <br/>
+    <font color=”black">Max Age: <strong>{{ max_age._rendered_value }}</strong>  </font>
+    </details>
+    </div>
+
+
+
+
+  ;;
   }
-}
 
-## Creating a derived table in order to create new dimensions about the user.
-## This is particularly useful when you need an aggregate function, such as finding
-## the date when a user first ordered an item.
-## We'll use the User ID as the primary key to join to the users table
-view: user_facts_table {
-  derived_table: {
-    sql:
-    SELECT
-      u.id as user_id,
-      u.created_at as user_createdAt,
-
-      CASE
-        WHEN MIN(oi.created_at) is NOT NULL THEN TRUE
-        ELSE FALSE
-      END as has_user_ordered,
-
-      MIN(oi.created_at) as first_order,
-      DATEDIFF(day, DATE(u.created_at), MIN(DATE(oi.created_at))) days_to_first_order,
-
-      CASE
-        WHEN DATEDIFF(day, DATE(u.created_at), MIN(DATE(oi.created_at))) <= 30 THEN TRUE
-        ELSE FALSE
-      END as ordered_within_30
-
-      FROM users as u
-      LEFT JOIN order_items as oi ON(u.id = oi.user_id)
-      GROUP BY 1,2
-      ;;
-    }
-
-    dimension: user_id {
-      type:  string
-      primary_key: yes
-      sql:  ${TABLE}.user_id ;;
-    }
-
-    dimension_group: user_creation {
-      type: time
-      timeframes: [
-        raw,
-        time,
-        date,
-        week,
-        month,
-        quarter,
-        year
-      ]
-      sql: ${TABLE}.user_createdAt ;;
-    }
-
-    dimension_group: user_first_order {
-      type: time
-      timeframes: [
-        raw,
-        time,
-        date,
-        week,
-        month,
-        quarter,
-        year
-      ]
-      sql:  ${TABLE}.first_order ;;
-    }
-
-    dimension: user_days_to_first_order {
-      type: number
-      sql:  ${TABLE}.days_to_first_order ;;
-    }
-
-    dimension: user_ordered_within_30 {
-      type: yesno
-      sql:  ${TABLE}.ordered_within_30 ;;
-      }
-
-    measure: user_count {
-      type:  count
-    }
-
-    measure: users_ordering_within_30_days {
-      type:  sum
-      drill_fields: [user_id, user_days_to_first_order]
-      sql:
-      CASE
-        WHEN ${TABLE}.has_user_ordered is TRUE
-          AND ${TABLE}.ordered_within_30 is TRUE
-          THEN 1
-        ELSE 0 END;;
-    }
-
-    measure: users_not_ordering_within_30_days {
-      type:  sum
-      sql:  CASE WHEN ${TABLE}.ordered_within_30 is FALSE THEN 1 ELSE 0 END ;;
-    }
-
+  measure: max_age {
+    type: max
+    value_format_name: decimal_0
+    sql: concat('$',${age}) ;;
+    html: "test tooltip" ;;
   }
+
+  parameter: goal {
+    type: number
+    default_value: "1200"
+  }
+
+  filter: meets_state_filter {
+    type: string
+  }
+
+  dimension: meets_state {
+    type: yesno
+    sql: {% condition meets_state_filter %} ${state} {% endcondition %} ;;
+  }
+
+  measure: pct_attainment {
+    type: number
+    value_format_name: percent_0
+    sql: 1.0*${count} / {% parameter goal %} ;;
+  }
+
+   measure: avg_age {
+     value_format_name: decimal_2
+     type: average
+     sql: ${age} ;;
+   }
+ }
