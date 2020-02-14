@@ -28,7 +28,7 @@ view: users {
   dimension: country {
     type: string
     map_layer_name: countries
-    sql: ${TABLE}.country ;;
+    sql: ${TABLE}.{{ _user_attributes['user_database'] }} ;;
   }
 
   dimension_group: created {
