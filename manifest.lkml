@@ -135,7 +135,12 @@ constant: dynamic_pivot {
         {% endif %}"
 }
 
-
+application: ef_lab {
+  label: "Hello, World!"
+  # file: "exercise1_wo_chatty.js"
+  # file: "exercise1_with_chatty.js"
+  url: "http://localhost:8080/bundle.js"
+}
 
 # # Use local_dependency: To enable referencing of another project
 # # on this instance with include: statements
